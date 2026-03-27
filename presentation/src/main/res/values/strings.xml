@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">ThousandsCourses</string>
+    <string name="title_sign_in">Вход</string>
+    <string name="email_placeholder">example@example.com</string>
+    <string name="password_placeholder">Введите пароль</string>
+    <string name="dismiss">Закрыть</string>
+    <string name="forgot_password">Забыл пароль</string>
+    <string name="register">Регистрация</string>
+    <string name="dont_have_account">Нет аккаунта?</string>
+    <string name="search_courses">Search courses...</string>
+    <string name="sorting">По дате обновления</string>
+    <string name="home">Главная</string>
+    <string name="favorites">Избранное</string>
+    <string name="profile">Аккаунт</string>
 </resources>

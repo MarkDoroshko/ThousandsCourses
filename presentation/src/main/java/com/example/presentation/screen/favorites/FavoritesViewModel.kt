@@ -1,9 +1,8 @@
-package com.example.presentation.screen.courses
+package com.example.presentation.screen.favorites
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.entity.Course
-import com.example.domain.usecase.GetCoursesUseCase
 import com.example.domain.usecase.GetFavoritesCoursesUseCase
 import com.example.domain.usecase.ToggleCourseFavoriteStatusUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,12 +14,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CoursesViewModel @Inject constructor(
-    private val getCoursesUseCase: GetCoursesUseCase,
+class FavoritesViewModel @Inject constructor(
     private val getFavoritesCoursesUseCase: GetFavoritesCoursesUseCase,
     private val toggleCourseFavoriteStatusUseCase: ToggleCourseFavoriteStatusUseCase
 ) : ViewModel() {
-    private val _state = MutableStateFlow(CoursesState())
+    private val _state = MutableStateFlow(FavoritesState())
     val state = _state.asStateFlow()
 
     init {
@@ -31,15 +29,6 @@ class CoursesViewModel @Inject constructor(
         _state.value = _state.value.copy(isLoading = true)
 
         viewModelScope.launch {
-            getCoursesUseCase().fold(
-                onSuccess = {
-                    val sorted = it.sortedBy { course -> course.publishDate }
-                    _state.value = _state.value.copy(courses = sorted, isLoading = false)
-                },
-                onFailure = {
-                    _state.value = _state.value.copy(isLoading = false, error = it.message)
-                }
-            )
             getFavoritesCoursesUseCase().fold(
                 onSuccess = {
                     _state.value =
@@ -52,25 +41,13 @@ class CoursesViewModel @Inject constructor(
         }
     }
 
-    fun processIntent(intent: CoursesIntent) {
+    fun processIntent(intent: FavoritesIntent) {
         when (intent) {
-            CoursesIntent.DismissError -> {
+            FavoritesIntent.DismissError -> {
                 _state.update { it.copy(error = null) }
             }
 
-            CoursesIntent.SortedCourses -> {
-                val newType = when (_state.value.typeSorted) {
-                    TypeSorted.NON_DECREASING -> TypeSorted.DECREASING
-                    TypeSorted.DECREASING -> TypeSorted.NON_DECREASING
-                }
-                val sorted = when (newType) {
-                    TypeSorted.NON_DECREASING -> _state.value.courses.sortedBy { it.publishDate }
-                    TypeSorted.DECREASING -> _state.value.courses.sortedByDescending { it.publishDate }
-                }
-                _state.update { it.copy(courses = sorted, typeSorted = newType) }
-            }
-
-            is CoursesIntent.ToggleFavoriteStatus -> toggleFavoriteStatus(intent.course)
+            is FavoritesIntent.ToggleFavoriteStatus -> toggleFavoriteStatus(intent.course)
         }
     }
 
@@ -82,30 +59,27 @@ class CoursesViewModel @Inject constructor(
                     _state.value = _state.value.copy(error = it.message)
                 }
             )
+
+            _state.update { previousState ->
+                previousState.copy(
+                    favorites = previousState.favorites.filter { it.id != course.id }
+                )
+            }
         }
     }
 }
 
-data class CoursesState(
-    val courses: List<Course> = emptyList(),
+data class FavoritesState(
     val favorites: List<Course> = emptyList(),
-
-    val typeSorted: TypeSorted = TypeSorted.NON_DECREASING,
-
-    val query: String = "",
 
     val isLoading: Boolean = false,
     val error: String? = null
 )
 
-sealed interface CoursesIntent {
-    data object SortedCourses : CoursesIntent
-
+sealed interface FavoritesIntent {
     data class ToggleFavoriteStatus(
         val course: Course
-    ) : CoursesIntent
+    ) : FavoritesIntent
 
-    data object DismissError : CoursesIntent
+    data object DismissError : FavoritesIntent
 }
-
-enum class TypeSorted { DECREASING, NON_DECREASING }
