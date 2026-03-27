@@ -1,6 +1,7 @@
 package com.example.data.repository
 
 import com.example.data.local.dao.CoursesDao
+import com.example.data.local.mapper.toDbModel
 import com.example.data.local.mapper.toEntities
 import com.example.data.remote.mapper.toListCourse
 import com.example.data.remote.service.CourseApiService
@@ -24,7 +25,13 @@ class CourseRepositoryImpl @Inject constructor(
             .mapCatching { it.map { coursesDbModel -> coursesDbModel.toEntities() } }
     }
 
-    override suspend fun toggleCourseFavoriteStatus(id: Int): Result<Unit> {
-        TODO("Not yet implemented")
+    override suspend fun toggleCourseFavoriteStatus(course: Course): Result<Unit> {
+        return runCatching {
+            if (coursesDao.getCourse(course.id) != null) {
+                coursesDao.deleteCourse(course.id)
+            } else {
+                coursesDao.addCourse(course.toDbModel())
+            }
+        }
     }
 }

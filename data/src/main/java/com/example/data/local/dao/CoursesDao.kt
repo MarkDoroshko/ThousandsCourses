@@ -13,9 +13,12 @@ interface CoursesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addCourse(courseDbModel: CourseDbModel): Long
 
-    @Delete
-    suspend fun deleteCourse(courseDbModel: CourseDbModel)
+    @Query("DELETE FROM courses WHERE id = :id")
+    suspend fun deleteCourse(id: Int)
 
     @Query("SELECT * FROM courses")
     fun getCourses(): Flow<List<CourseDbModel>>
+
+    @Query("SELECT * FROM courses WHERE id = :id")
+    fun getCourse(id: Int): CourseDbModel?
 }
