@@ -3,7 +3,9 @@ package com.example.presentation.screen.login
 import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -27,7 +30,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -90,6 +92,17 @@ fun LoginScreen(
                     radius = 30.dp
                 )
 
+                AnimatedVisibility(visible = state.emailError != null) {
+                    Text(
+                        text = state.emailError ?: "",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 6.dp, start = 4.dp)
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
 
                 AppTextField(
@@ -101,17 +114,6 @@ fun LoginScreen(
                     paddingStart = 16.dp,
                     color = MaterialTheme.colorScheme.surfaceVariant,
                     radius = 30.dp
-                )
-            }
-
-            AnimatedVisibility(visible = state.emailError != null) {
-                Text(
-                    text = state.emailError ?: "",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 6.dp, start = 4.dp)
                 )
             }
 
@@ -143,13 +145,67 @@ fun LoginScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             AppText(
                 text = stringResource(R.string.forgot_password),
                 isClickable = true,
                 onClick = {}
             )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            HorizontalDivider(
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.outline
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Button(
+                    modifier = Modifier.weight(1f).height(40.dp),
+                    onClick = {
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Constants.VK_URL.toUri()))
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Blue,
+                        contentColor = White
+                    ),
+                    shape = RoundedCornerShape(30.dp),
+                    contentPadding = PaddingValues(0.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_vk),
+                        contentDescription = null
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(40.dp)
+                        .clip(RoundedCornerShape(30.dp))
+                        .background(
+                            brush = Brush.verticalGradient(colors = listOf(Orange100, Orange200))
+                        )
+                        .clickable {
+                            context.startActivity(Intent(Intent.ACTION_VIEW, Constants.OK_URL.toUri()))
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_ok),
+                        contentDescription = null,
+                        tint = White
+                    )
+                }
+            }
         }
 
         AppErrorSnackbar(
@@ -157,56 +213,5 @@ fun LoginScreen(
             errorMessage = state.error,
             onDismiss = { viewModel.processIntent(LoginIntent.DismissError) }
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Button(
-                onClick = {
-                    context.startActivity(Intent(Intent.ACTION_VIEW, Constants.VK_URL.toUri()))
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Blue,
-                    contentColor = White
-                ),
-                shape = RoundedCornerShape(30.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_vk),
-                    contentDescription = null
-                )
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            HorizontalDivider(
-                modifier = Modifier.fillMaxWidth(),
-                thickness = 1.dp,
-                color = MaterialTheme.colorScheme.outline
-            )
-
-            Button(
-                modifier = Modifier.background(
-                    brush = Brush.verticalGradient(colors = listOf(Orange100, Orange200)),
-                    shape = RoundedCornerShape(30.dp)
-                ),
-                onClick = {
-                    context.startActivity(Intent(Intent.ACTION_VIEW, Constants.OK_URL.toUri()))
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = White
-                ),
-                shape = RoundedCornerShape(30.dp),
-                elevation = ButtonDefaults.buttonElevation(0.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_ok),
-                    contentDescription = null
-                )
-            }
-        }
     }
 }

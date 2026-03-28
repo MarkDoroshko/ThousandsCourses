@@ -16,23 +16,19 @@ fun AppText(
     isClickable: Boolean = false,
     onClick: () -> Unit = {}
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
-    ) {
-        if (isClickable) {
-            Text(
-                modifier = Modifier.clickable { onClick() },
-                text = text,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.primary
-            )
-        } else {
-            Text(
-                text = text,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-        }
+    if (isClickable) {
+        Text(
+            modifier = modifier.clickable { onClick() },
+            text = text,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.primary
+        )
+    } else {
+        Text(
+            modifier = modifier,
+            text = text,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onBackground
+        )
     }
 }
