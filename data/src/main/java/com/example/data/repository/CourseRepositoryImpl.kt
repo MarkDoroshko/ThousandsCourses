@@ -3,6 +3,7 @@ package com.example.data.repository
 import com.example.data.local.dao.CoursesDao
 import com.example.data.local.mapper.toDbModel
 import com.example.data.local.mapper.toEntities
+import com.example.data.local.mapper.toEntity
 import com.example.data.remote.mapper.toListCourse
 import com.example.data.remote.service.CourseApiService
 import com.example.domain.entity.Course
@@ -32,6 +33,12 @@ class CourseRepositoryImpl @Inject constructor(
             } else {
                 coursesDao.addCourse(course.toDbModel())
             }
+        }
+    }
+
+    override suspend fun getCourseFromFavorites(courseId: Int): Result<Course?> {
+        return runCatching {
+            coursesDao.getCourse(courseId)?.toEntity()
         }
     }
 }

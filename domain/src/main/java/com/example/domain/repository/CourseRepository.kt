@@ -9,4 +9,6 @@ interface CourseRepository {
     suspend fun getFavoritesCourses(): Result<Flow<List<Course>>>
 
     suspend fun toggleCourseFavoriteStatus(course: Course): Result<Unit>
+
+    suspend fun getCourseFromFavorites(courseId: Int): Result<Course?>
 }
