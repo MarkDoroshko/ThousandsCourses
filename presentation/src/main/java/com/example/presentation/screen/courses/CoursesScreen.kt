@@ -2,7 +2,9 @@ package com.example.presentation.screen.courses
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -61,14 +63,14 @@ fun CoursesScreen(
 
             Button(
                 modifier = Modifier
-                    .weight(1f)
                     .size(56.dp),
                 onClick = {},
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     contentColor = MaterialTheme.colorScheme.onSurface
                 ),
-                shape = RoundedCornerShape(28.dp)
+                shape = RoundedCornerShape(28.dp),
+                contentPadding = PaddingValues(0.dp)
             ) {
                 Icon(
                     modifier = Modifier
@@ -80,7 +82,10 @@ fun CoursesScreen(
             }
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
+
         Row(
+            modifier = Modifier.align(Alignment.End),
             horizontalArrangement = Arrangement.End
         ) {
             Text(
@@ -89,15 +94,20 @@ fun CoursesScreen(
                 color = MaterialTheme.colorScheme.primary
             )
 
+            Spacer(modifier = Modifier.width(4.dp))
+
             Icon(
                 modifier = Modifier
                     .width(13.34.dp)
-                    .height(11.21.dp),
+                    .height(11.21.dp)
+                    .align(Alignment.CenterVertically),
                 painter = painterResource(R.drawable.ic_sorting),
                 tint = MaterialTheme.colorScheme.primary,
                 contentDescription = null
             )
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),

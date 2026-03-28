@@ -71,6 +71,8 @@ fun NavGraph(
                 composable(Screen.Courses.route) { CoursesScreen() }
 
                 composable(Screen.Favorites.route) { FavoritesScreen() }
+
+                composable(Screen.Profile.route) {  }
             }
         }
     }

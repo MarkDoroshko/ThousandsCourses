@@ -1,6 +1,7 @@
 package com.example.data.di
 
 import com.example.data.remote.service.CourseApiService
+import com.example.data.utils.Constants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,6 +36,7 @@ object NetworkModule {
     fun provideRetrofitBuilder(
         converterFactory: Converter.Factory
     ): Retrofit.Builder = Retrofit.Builder()
+        .baseUrl(Constants.BASE_URL)
         .addConverterFactory(converterFactory)
 
     @Provides
