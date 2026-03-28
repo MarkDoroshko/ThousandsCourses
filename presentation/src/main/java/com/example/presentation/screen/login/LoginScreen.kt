@@ -73,7 +73,8 @@ fun LoginScreen(
             AppTitle(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.title_sign_in),
-                textAlign = TextAlign.Left
+                textAlign = TextAlign.Left,
+                textStyle = MaterialTheme.typography.titleLarge
             )
 
             Spacer(modifier = Modifier.height(28.dp))

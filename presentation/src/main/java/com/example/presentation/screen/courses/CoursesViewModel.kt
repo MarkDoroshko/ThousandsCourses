@@ -41,12 +41,13 @@ class CoursesViewModel @Inject constructor(
                 }
             )
             getFavoritesCoursesUseCase().fold(
-                onSuccess = {
-                    _state.value =
-                        _state.value.copy(favorites = it.first(), isLoading = false)
+                onSuccess = { flow ->
+                    flow.collect { favorites ->
+                        _state.update { it.copy(favorites = favorites) }
+                    }
                 },
                 onFailure = {
-                    _state.value = _state.value.copy(isLoading = false, error = it.message)
+                    _state.value = _state.value.copy(error = it.message)
                 }
             )
         }
@@ -77,7 +78,14 @@ class CoursesViewModel @Inject constructor(
     private fun toggleFavoriteStatus(course: Course) {
         viewModelScope.launch {
             toggleCourseFavoriteStatusUseCase(course).fold(
-                onSuccess = {},
+                onSuccess = {
+                    val updatedFavorites = if (_state.value.favorites.any { it.id == course.id }) {
+                        _state.value.favorites.filter { it.id != course.id }
+                    } else {
+                        _state.value.favorites + course
+                    }
+                    _state.update { it.copy(favorites = updatedFavorites) }
+                },
                 onFailure = {
                     _state.value = _state.value.copy(error = it.message)
                 }

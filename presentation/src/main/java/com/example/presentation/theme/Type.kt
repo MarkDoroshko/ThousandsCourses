@@ -57,6 +57,13 @@ val Typography = Typography(
         lineHeight = 18.sp,
         letterSpacing = 0.5.sp
     ),
+    bodyLarge = TextStyle(  // Альтернативные заголовки экранов
+        fontFamily = Roboto,
+        fontWeight = FontWeight.Normal,
+        fontSize = 22.sp,
+        lineHeight = 28.sp,
+        letterSpacing = 0.sp
+    ),
     bodyMedium = TextStyle(  // Обычный текст
         fontFamily = Roboto,
         fontWeight = FontWeight.Medium,

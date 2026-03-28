@@ -20,5 +20,5 @@ interface CoursesDao {
     fun getCourses(): Flow<List<CourseDbModel>>
 
     @Query("SELECT * FROM courses WHERE id = :id")
-    fun getCourse(id: Int): CourseDbModel?
+    suspend fun getCourse(id: Int): CourseDbModel?
 }

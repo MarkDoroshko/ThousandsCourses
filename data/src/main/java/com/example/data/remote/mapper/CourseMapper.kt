@@ -10,7 +10,7 @@ fun CourseDto.toEntity(): Course {
         id = id,
         title = title,
         text = text,
-        price = price.toInt(),
+        price = price.replace(" ", "").toInt(),
         rate = rate.toDouble(),
         startDate = LocalDate.parse(startDate),
         hasLike = hasLike,

@@ -30,9 +30,10 @@ class FavoritesViewModel @Inject constructor(
 
         viewModelScope.launch {
             getFavoritesCoursesUseCase().fold(
-                onSuccess = {
-                    _state.value =
-                        _state.value.copy(favorites = it.first(), isLoading = false)
+                onSuccess = { flow ->
+                    flow.collect { favorites ->
+                        _state.update { it.copy(favorites = favorites, isLoading = false) }
+                    }
                 },
                 onFailure = {
                     _state.value = _state.value.copy(isLoading = false, error = it.message)

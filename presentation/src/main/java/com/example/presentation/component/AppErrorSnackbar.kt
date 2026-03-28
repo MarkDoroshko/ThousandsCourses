@@ -37,7 +37,7 @@ fun AppErrorSnackbar(
     AnimatedVisibility(
         visible = errorMessage != null,
         enter = slideInVertically(initialOffsetY = { it }),
-        exit = slideOutVertically(targetOffsetY = { -1 * it }),
+        exit = slideOutVertically(targetOffsetY = { it }),
         modifier = modifier
     ) {
         Surface(

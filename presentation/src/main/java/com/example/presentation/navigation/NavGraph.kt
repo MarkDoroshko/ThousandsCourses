@@ -12,6 +12,8 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import com.example.presentation.component.AppBottomNavigation
 import com.example.presentation.screen.login.LoginScreen
 import kotlin.collections.contains
@@ -49,10 +51,37 @@ fun NavGraph(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+            val screenOrder = listOf(
+                Screen.Login.route,
+                Screen.Courses.route,
+                Screen.Favorites.route,
+                Screen.Profile.route
+            )
+
             NavHost(
                 modifier = modifier.fillMaxSize(),
                 navController = navController,
-                startDestination = Screen.Login.route
+                startDestination = Screen.Login.route,
+                enterTransition = {
+                    val from = screenOrder.indexOf(initialState.destination.route)
+                    val to = screenOrder.indexOf(targetState.destination.route)
+                    slideInHorizontally(initialOffsetX = { if (to >= from) it else -it })
+                },
+                exitTransition = {
+                    val from = screenOrder.indexOf(initialState.destination.route)
+                    val to = screenOrder.indexOf(targetState.destination.route)
+                    slideOutHorizontally(targetOffsetX = { if (to >= from) -it else it })
+                },
+                popEnterTransition = {
+                    val from = screenOrder.indexOf(initialState.destination.route)
+                    val to = screenOrder.indexOf(targetState.destination.route)
+                    slideInHorizontally(initialOffsetX = { if (to >= from) it else -it })
+                },
+                popExitTransition = {
+                    val from = screenOrder.indexOf(initialState.destination.route)
+                    val to = screenOrder.indexOf(targetState.destination.route)
+                    slideOutHorizontally(targetOffsetX = { if (to >= from) -it else it })
+                }
             ) {
                 composable(Screen.Login.route) {
                     LoginScreen(

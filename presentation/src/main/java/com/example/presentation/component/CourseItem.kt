@@ -1,6 +1,8 @@
 package com.example.presentation.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,10 +18,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,7 +40,6 @@ fun CourseItem(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
@@ -69,7 +70,9 @@ fun CourseItem(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Row(
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = "${course.price} ₽",
@@ -102,16 +105,20 @@ fun CourseItem(
                 }
             }
 
-            IconButton(
+            Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(8.dp)
-                    .size(36.dp),
-                onClick = onToggleFavorite
+                    .size(28.dp)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = onToggleFavorite
+                    )
             ) {
                 Box(
                     modifier = Modifier
-                        .size(36.dp)
+                        .size(28.dp)
                         .background(
                             color = Color.Black.copy(alpha = 0.2f),
                             shape = CircleShape
@@ -119,10 +126,10 @@ fun CourseItem(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_favorites),
+                        modifier = Modifier.width(10.67.dp).height(13.33.dp),
+                        painter = painterResource(if (isFavorite) R.drawable.ic_favorites_filled else R.drawable.ic_favorites),
                         contentDescription = null,
-                        tint = if (isFavorite) Color.White else MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(20.dp)
+                        tint = if (isFavorite) MaterialTheme.colorScheme.primary else Color.Unspecified
                     )
                 }
             }

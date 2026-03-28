@@ -8,6 +8,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Response
 import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -33,10 +35,23 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
+        .addInterceptor { chain ->
+            val response: Response = chain.proceed(chain.request())
+            response.newBuilder()
+                .header("Content-Type", "application/json")
+                .build()
+        }
+        .build()
+
+    @Provides
+    @Singleton
     fun provideRetrofitBuilder(
-        converterFactory: Converter.Factory
+        converterFactory: Converter.Factory,
+        okHttpClient: OkHttpClient
     ): Retrofit.Builder = Retrofit.Builder()
         .baseUrl(Constants.BASE_URL)
+        .client(okHttpClient)
         .addConverterFactory(converterFactory)
 
     @Provides
