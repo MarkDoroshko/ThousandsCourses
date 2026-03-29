@@ -1,11 +1,15 @@
 package com.example.presentation.screen.login
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.domain.validation.specific.EmailValidator
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -14,6 +18,9 @@ class LoginViewModel @Inject constructor(
 ) : ViewModel() {
     private val _state = MutableStateFlow(LoginState())
     val state = _state.asStateFlow()
+
+    private val _effect = Channel<LoginEffect>(Channel.BUFFERED)
+    val effect = _effect.receiveAsFlow()
 
     fun processIntent(intent: LoginIntent) {
         when (intent) {
@@ -37,7 +44,11 @@ class LoginViewModel @Inject constructor(
                 _state.update { it.copy(password = intent.value) }
             }
 
-            LoginIntent.Submit -> {}
+            LoginIntent.Submit -> {  // TODO: Реализовать нормальную авторизацию и навигацию при успехе
+                viewModelScope.launch {
+                    _effect.send(LoginEffect.NavigateToMain)
+                }
+            }
         }
     }
 }
@@ -65,4 +76,8 @@ sealed interface LoginIntent {
     data object Submit : LoginIntent
 
     data object DismissError : LoginIntent
+}
+
+sealed interface LoginEffect {
+    data object NavigateToMain : LoginEffect
 }

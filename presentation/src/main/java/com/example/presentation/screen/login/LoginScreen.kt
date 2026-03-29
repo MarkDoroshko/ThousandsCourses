@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -56,6 +57,14 @@ fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
     onSubmit: () -> Unit
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                LoginEffect.NavigateToMain -> onSubmit()
+            }
+        }
+    }
+
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
@@ -127,7 +136,6 @@ fun LoginScreen(
                 onClick = {
                     focusManager.clearFocus()
                     viewModel.processIntent(LoginIntent.Submit)
-                    onSubmit()
                 },
                 enabled = state.isSubmitButtonEnabled,
                 isLoading = state.isLoading
@@ -171,7 +179,9 @@ fun LoginScreen(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Button(
-                    modifier = Modifier.weight(1f).height(40.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(40.dp),
                     onClick = {
                         context.startActivity(Intent(Intent.ACTION_VIEW, Constants.VK_URL.toUri()))
                     },
@@ -199,7 +209,12 @@ fun LoginScreen(
                             brush = Brush.verticalGradient(colors = listOf(Orange100, Orange200))
                         )
                         .clickable {
-                            context.startActivity(Intent(Intent.ACTION_VIEW, Constants.OK_URL.toUri()))
+                            context.startActivity(
+                                Intent(
+                                    Intent.ACTION_VIEW,
+                                    Constants.OK_URL.toUri()
+                                )
+                            )
                         },
                     contentAlignment = Alignment.Center
                 ) {

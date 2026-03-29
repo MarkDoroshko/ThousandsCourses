@@ -71,7 +71,6 @@ class FavoritesViewModel @Inject constructor(
 
 data class FavoritesState(
     val favorites: List<Course> = emptyList(),
-
     val isLoading: Boolean = false,
     val error: String? = null
 )
