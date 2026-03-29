@@ -2,6 +2,7 @@ package com.example.domain.usecase
 
 import com.example.domain.entity.Course
 import com.example.domain.repository.CourseRepository
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class GetCoursesUseCase @Inject constructor(
@@ -9,14 +10,11 @@ class GetCoursesUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(): Result<List<Course>> {
         return courseRepository.getCourses().onSuccess { courses ->
-            courses.forEach { course ->
-                if (course.hasLike) {
-                    courseRepository.getCourseFromFavorites(course.id).onSuccess { courseFromFavorites ->
-                        if (courseFromFavorites == null) {
-                            courseRepository.toggleCourseFavoriteStatus(course)
-                        }
-                    }
-                }
+            courseRepository.getFavoritesCourses().onSuccess { favoritesFlow ->
+                val existingIds = favoritesFlow.first().map { it.id }.toSet()
+                courses
+                    .filter { it.hasLike && it.id !in existingIds }
+                    .forEach { courseRepository.toggleCourseFavoriteStatus(it) }
             }
         }
     }

@@ -20,11 +20,13 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -44,7 +46,7 @@ fun CoursesScreen(
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .fillMaxSize(),
             verticalArrangement = Arrangement.Top,
@@ -120,16 +122,12 @@ fun CoursesScreen(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    items(state.courses) {
+                    items(state.courses, key = { course -> course.id }) { course ->
                         CourseItem(
-                            course = it,
-                            isFavorite = state.favorites.any { favoriteCourse -> favoriteCourse.id == it.id },
+                            course = course,
+                            isFavorite = state.favorites.any { it.id == course.id },
                             onToggleFavorite = {
-                                viewModel.processIntent(
-                                    CoursesIntent.ToggleFavoriteStatus(
-                                        it
-                                    )
-                                )
+                                viewModel.processIntent(CoursesIntent.ToggleFavoriteStatus(course))
                             }
                         )
                     }

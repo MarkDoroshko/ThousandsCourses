@@ -27,16 +27,16 @@ class CoursesViewModel @Inject constructor(
     }
 
     private fun loadCourses() {
-        _state.value = _state.value.copy(isLoading = true)
+        _state.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {
             getCoursesUseCase().fold(
-                onSuccess = {
-                    val sorted = it.sortedBy { course -> course.publishDate }
-                    _state.value = _state.value.copy(courses = sorted, isLoading = false)
+                onSuccess = { courses ->
+                    val sorted = courses.sortedBy { it.publishDate }
+                    _state.update { it.copy(courses = sorted, isLoading = false) }
                 },
-                onFailure = {
-                    _state.value = _state.value.copy(isLoading = false, error = it.message)
+                onFailure = { throwable ->
+                    _state.update { it.copy(isLoading = false, error = throwable.message) }
                 }
             )
         }
@@ -48,8 +48,8 @@ class CoursesViewModel @Inject constructor(
                         _state.update { it.copy(favorites = favorites) }
                     }
                 },
-                onFailure = {
-                    _state.value = _state.value.copy(error = it.message)
+                onFailure = { throwable ->
+                    _state.update { it.copy(error = throwable.message) }
                 }
             )
         }
@@ -66,14 +66,17 @@ class CoursesViewModel @Inject constructor(
                     TypeSorted.NON_DECREASING -> TypeSorted.DECREASING
                     TypeSorted.DECREASING -> TypeSorted.NON_DECREASING
                 }
+
                 val sorted = when (newType) {
                     TypeSorted.NON_DECREASING -> _state.value.courses.sortedBy { it.publishDate }
                     TypeSorted.DECREASING -> _state.value.courses.sortedByDescending { it.publishDate }
                 }
+
                 _state.update { it.copy(courses = sorted, typeSorted = newType) }
             }
 
             is CoursesIntent.ToggleFavoriteStatus -> toggleFavoriteStatus(intent.course)
+
             is CoursesIntent.SearchQueryChanged -> {}
         }
     }

@@ -20,6 +20,7 @@ import kotlin.collections.contains
 import androidx.navigation.compose.NavHost
 import com.example.presentation.screen.courses.CoursesScreen
 import com.example.presentation.screen.favorites.FavoritesScreen
+import com.example.presentation.screen.profile.ProfileScreen
 
 @Composable
 fun NavGraph(
@@ -36,7 +37,7 @@ fun NavGraph(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
-        contentColor = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         bottomBar = {
             if (showBottomBar) {
                 AppBottomNavigation(
@@ -101,7 +102,7 @@ fun NavGraph(
 
                 composable(Screen.Favorites.route) { FavoritesScreen() }
 
-                composable(Screen.Profile.route) {  }
+                composable(Screen.Profile.route) { ProfileScreen() }
             }
         }
     }

@@ -25,7 +25,7 @@ class FavoritesViewModel @Inject constructor(
     }
 
     private fun loadCourses() {
-        _state.value = _state.value.copy(isLoading = true)
+        _state.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {
             getFavoritesCoursesUseCase().fold(
@@ -34,8 +34,8 @@ class FavoritesViewModel @Inject constructor(
                         _state.update { it.copy(favorites = favorites, isLoading = false) }
                     }
                 },
-                onFailure = {
-                    _state.value = _state.value.copy(isLoading = false, error = it.message)
+                onFailure = { throwable ->
+                    _state.update { it.copy(isLoading = false, error = throwable.message) }
                 }
             )
         }
@@ -55,16 +55,10 @@ class FavoritesViewModel @Inject constructor(
         viewModelScope.launch {
             toggleCourseFavoriteStatusUseCase(course).fold(
                 onSuccess = {},
-                onFailure = {
-                    _state.value = _state.value.copy(error = it.message)
+                onFailure = { throwable ->
+                    _state.update { it.copy(error = throwable.message) }
                 }
             )
-
-            _state.update { previousState ->
-                previousState.copy(
-                    favorites = previousState.favorites.filter { it.id != course.id }
-                )
-            }
         }
     }
 }
