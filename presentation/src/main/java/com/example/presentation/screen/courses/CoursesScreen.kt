@@ -1,5 +1,7 @@
 package com.example.presentation.screen.courses
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,14 +16,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -43,6 +46,11 @@ fun CoursesScreen(
     viewModel: CoursesViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(state.typeSorted) {
+        listState.scrollToItem(0)
+    }
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(
@@ -68,9 +76,8 @@ fun CoursesScreen(
                 )
 
                 Button(
-                    modifier = Modifier
-                        .size(56.dp),
-                    onClick = { viewModel.processIntent(CoursesIntent.SortedCourses) },
+                    modifier = Modifier.size(56.dp),
+                    onClick = {},
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.surface,
                         contentColor = MaterialTheme.colorScheme.onSurface
@@ -91,7 +98,9 @@ fun CoursesScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(
-                modifier = Modifier.align(Alignment.End),
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .clickable { viewModel.processIntent(CoursesIntent.SortedCourses) },
                 horizontalArrangement = Arrangement.End
             ) {
                 Text(
@@ -119,6 +128,7 @@ fun CoursesScreen(
                 Loader()
             } else {
                 LazyColumn(
+                    state = listState,
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {

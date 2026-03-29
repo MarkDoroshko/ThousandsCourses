@@ -32,8 +32,12 @@ class CoursesViewModel @Inject constructor(
         viewModelScope.launch {
             getCoursesUseCase().fold(
                 onSuccess = { courses ->
-                    val sorted = courses.sortedBy { it.publishDate }
-                    _state.update { it.copy(courses = sorted, isLoading = false) }
+                    _state.update { previousState ->
+                        previousState.copy(
+                            courses = courses.sortedBy { it.publishDate },
+                            isLoading = false
+                        )
+                    }
                 },
                 onFailure = { throwable ->
                     _state.update { it.copy(isLoading = false, error = throwable.message) }
@@ -62,17 +66,19 @@ class CoursesViewModel @Inject constructor(
             }
 
             CoursesIntent.SortedCourses -> {
-                val newType = when (_state.value.typeSorted) {
-                    TypeSorted.NON_DECREASING -> TypeSorted.DECREASING
-                    TypeSorted.DECREASING -> TypeSorted.NON_DECREASING
-                }
+                _state.update { previousState ->
+                    val newType = when (previousState.typeSorted) {
+                        TypeSorted.NON_DECREASING -> TypeSorted.DECREASING
+                        TypeSorted.DECREASING -> TypeSorted.NON_DECREASING
+                    }
 
-                val sorted = when (newType) {
-                    TypeSorted.NON_DECREASING -> _state.value.courses.sortedBy { it.publishDate }
-                    TypeSorted.DECREASING -> _state.value.courses.sortedByDescending { it.publishDate }
-                }
+                    val sorted = when (newType) {
+                        TypeSorted.NON_DECREASING -> previousState.courses.sortedBy { it.publishDate }
+                        TypeSorted.DECREASING -> previousState.courses.sortedByDescending { it.publishDate }
+                    }
 
-                _state.update { it.copy(courses = sorted, typeSorted = newType) }
+                    previousState.copy(courses = sorted, typeSorted = newType)
+                }
             }
 
             is CoursesIntent.ToggleFavoriteStatus -> toggleFavoriteStatus(intent.course)
@@ -85,8 +91,8 @@ class CoursesViewModel @Inject constructor(
         viewModelScope.launch {
             toggleCourseFavoriteStatusUseCase(course).fold(
                 onSuccess = {},
-                onFailure = {
-                    _state.value = _state.value.copy(error = it.message)
+                onFailure = { throwable ->
+                    _state.update { it.copy(error = throwable.message) }
                 }
             )
         }
