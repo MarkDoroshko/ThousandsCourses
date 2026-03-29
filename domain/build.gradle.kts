@@ -16,4 +16,18 @@ dependencies {
 
     // Dependency Injection
     implementation(libs.javax.inject)
+
+    // JUnit
+    testImplementation(libs.junit.jupiter)
+    testRuntimeOnly(libs.junit.platform.launcher)
+
+    // Mockito
+    testImplementation(libs.mockito.kotlin)
+
+    // Coroutines Test
+    testImplementation(libs.kotlinx.coroutines.test)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
