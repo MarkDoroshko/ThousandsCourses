@@ -12,4 +12,5 @@
     <string name="home">Главная</string>
     <string name="favorites">Избранное</string>
     <string name="profile">Аккаунт</string>
+    <string name="profile_title">Экран-заглушка</string>
 </resources>

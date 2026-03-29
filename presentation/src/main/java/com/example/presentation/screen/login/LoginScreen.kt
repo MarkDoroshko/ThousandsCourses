@@ -96,7 +96,10 @@ fun LoginScreen(
                 AppTextField(
                     title = "Email",
                     value = state.email,
-                    onValueChange = { viewModel.processIntent(LoginIntent.InputEmail(it)) },
+                    onValueChange = { value ->
+                        val filtered = value.filter { it.code < 128 }
+                        viewModel.processIntent(LoginIntent.InputEmail(filtered))
+                    },
                     placeholderText = stringResource(R.string.email_placeholder),
                     height = 40.dp,
                     paddingStart = 16.dp,
