@@ -41,7 +41,7 @@ class CourseRepositoryImplTest {
     }
 
     @Test
-    fun getFavoritesCourses_возвращает_пустой_Flow_для_пустой_базы() = runTest {
+    fun getFavoritesCourses_returns_an_empty_Flow_for_an_empty_database() = runTest {
         val result = repository.getFavoritesCourses()
 
         assertTrue(result.isSuccess)
@@ -49,8 +49,8 @@ class CourseRepositoryImplTest {
     }
 
     @Test
-    fun getFavoritesCourses_реагирует_на_добавление_курса() = runTest {
-        val course = createCourse(id = 1)
+    fun getFavoritesCourses_reacts_to_course_addition() = runTest {
+        val course = createCourse()
         repository.toggleCourseFavoriteStatus(course)
 
         val result = repository.getFavoritesCourses().getOrNull()!!.first()
@@ -60,8 +60,8 @@ class CourseRepositoryImplTest {
     }
 
     @Test
-    fun getFavoritesCourses_реагирует_на_удаление_курса() = runTest {
-        val course = createCourse(id = 1)
+    fun getFavoritesCourses_responds_to_course_deletion() = runTest {
+        val course = createCourse()
         repository.toggleCourseFavoriteStatus(course)
         repository.toggleCourseFavoriteStatus(course)
 
@@ -71,8 +71,8 @@ class CourseRepositoryImplTest {
     }
 
     @Test
-    fun toggleCourseFavoriteStatus_добавляет_курс_если_его_нет_в_базе() = runTest {
-        val course = createCourse(id = 1)
+    fun toggleCourseFavoriteStatus_adds_the_course_if_it_is_not_in_the_database() = runTest {
+        val course = createCourse()
 
         repository.toggleCourseFavoriteStatus(course)
 
@@ -81,8 +81,8 @@ class CourseRepositoryImplTest {
     }
 
     @Test
-    fun toggleCourseFavoriteStatus_удаляет_курс_если_он_есть_в_базе() = runTest {
-        val course = createCourse(id = 1)
+    fun toggleCourseFavoriteStatus_deletes_the_course_if_it_exists_in_the_database() = runTest {
+        val course = createCourse()
         repository.toggleCourseFavoriteStatus(course)
 
         repository.toggleCourseFavoriteStatus(course)
@@ -92,8 +92,8 @@ class CourseRepositoryImplTest {
     }
 
     @Test
-    fun toggleCourseFavoriteStatus_возвращает_Result_success() = runTest {
-        val course = createCourse(id = 1)
+    fun toggleCourseFavoriteStatus_returns_Result_success() = runTest {
+        val course = createCourse()
 
         val result = repository.toggleCourseFavoriteStatus(course)
 
@@ -101,8 +101,8 @@ class CourseRepositoryImplTest {
     }
 
     @Test
-    fun getCourseFromFavorites_возвращает_курс_по_id() = runTest {
-        val course = createCourse(id = 1)
+    fun getCourseFromFavorites_returns_course_by_id() = runTest {
+        val course = createCourse()
         repository.toggleCourseFavoriteStatus(course)
 
         val result = repository.getCourseFromFavorites(1)
@@ -112,15 +112,15 @@ class CourseRepositoryImplTest {
     }
 
     @Test
-    fun getCourseFromFavorites_возвращает_null_если_курс_не_найден() = runTest {
+    fun getCourseFromFavorites_returns_null_if_cursor_not_found() = runTest {
         val result = repository.getCourseFromFavorites(999)
 
         assertTrue(result.isSuccess)
         assertNull(result.getOrNull())
     }
 
-    private fun createCourse(id: Int = 1) = Course(
-        id = id,
+    private fun createCourse() = Course(
+        id = 1,
         title = "Title",
         text = "Text",
         price = 1000,

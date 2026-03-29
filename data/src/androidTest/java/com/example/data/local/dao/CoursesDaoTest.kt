@@ -35,7 +35,7 @@ class CoursesDaoTest {
     }
 
     @Test
-    fun addCourse_сохраняет_запись_в_базу() = runTest {
+    fun addCourse_saves_the_record_to_the_database() = runTest {
         val course = createCourseDbModel(id = 1)
 
         dao.addCourse(course)
@@ -45,7 +45,7 @@ class CoursesDaoTest {
     }
 
     @Test
-    fun addCourse_повторная_вставка_заменяет_существующую() = runTest {
+    fun addCourse_reinserting_replaces_existing_one() = runTest {
         val original = createCourseDbModel(id = 1, title = "Original")
         val updated = createCourseDbModel(id = 1, title = "Updated")
 
@@ -57,7 +57,7 @@ class CoursesDaoTest {
     }
 
     @Test
-    fun deleteCourse_удаляет_запись_по_id() = runTest {
+    fun deleteCourse_delete_record_by_id() = runTest {
         val course = createCourseDbModel(id = 1)
         dao.addCourse(course)
 
@@ -68,7 +68,7 @@ class CoursesDaoTest {
     }
 
     @Test
-    fun deleteCourse_несуществующей_записи_не_вызывает_ошибки() = runTest {
+    fun deleteCourse_non_existent_record_does_not_cause_an_error() = runTest {
         dao.deleteCourse(999)
 
         val result = dao.getCourse(999)
@@ -76,14 +76,14 @@ class CoursesDaoTest {
     }
 
     @Test
-    fun getCourses_возвращает_пустой_список_для_пустой_базы() = runTest {
+    fun getCourses_returns_an_empty_list_for_an_empty_database() = runTest {
         val result = dao.getCourses().first()
 
         assertTrue(result.isEmpty())
     }
 
     @Test
-    fun getCourses_обновляется_при_добавлении_курса() = runTest {
+    fun getCourses_updated_when_a_course_is_added() = runTest {
         val course = createCourseDbModel(id = 1)
 
         dao.addCourse(course)
@@ -94,7 +94,7 @@ class CoursesDaoTest {
     }
 
     @Test
-    fun getCourses_обновляется_при_удалении_курса() = runTest {
+    fun getCourses_updated_when_a_course_is_deleted() = runTest {
         val course = createCourseDbModel(id = 1)
         dao.addCourse(course)
 
@@ -105,7 +105,7 @@ class CoursesDaoTest {
     }
 
     @Test
-    fun getCourse_возвращает_запись_по_id() = runTest {
+    fun getCourse_returns_record_by_id() = runTest {
         val course = createCourseDbModel(id = 1)
         dao.addCourse(course)
 
@@ -115,14 +115,14 @@ class CoursesDaoTest {
     }
 
     @Test
-    fun getCourse_возвращает_null_если_запись_не_найдена() = runTest {
+    fun getCourse_returns_null_if_record_not_found() = runTest {
         val result = dao.getCourse(999)
 
         assertNull(result)
     }
 
     @Test
-    fun addCourse_корректно_сохраняет_и_читает_LocalDate() = runTest {
+    fun addCourse_correctly_saves_and_reads_LocalDate() = runTest {
         val startDate = LocalDate.of(2024, 3, 15)
         val publishDate = LocalDate.of(2024, 6, 1)
         val course = createCourseDbModel(id = 1, startDate = startDate, publishDate = publishDate)
