@@ -39,6 +39,9 @@ class CoursesViewModel @Inject constructor(
                     _state.value = _state.value.copy(isLoading = false, error = it.message)
                 }
             )
+        }
+
+        viewModelScope.launch {
             getFavoritesCoursesUseCase().fold(
                 onSuccess = { flow ->
                     flow.collect { favorites ->
@@ -71,20 +74,14 @@ class CoursesViewModel @Inject constructor(
             }
 
             is CoursesIntent.ToggleFavoriteStatus -> toggleFavoriteStatus(intent.course)
+            is CoursesIntent.SearchQueryChanged -> {}
         }
     }
 
     private fun toggleFavoriteStatus(course: Course) {
         viewModelScope.launch {
             toggleCourseFavoriteStatusUseCase(course).fold(
-                onSuccess = {
-                    val updatedFavorites = if (_state.value.favorites.any { it.id == course.id }) {
-                        _state.value.favorites.filter { it.id != course.id }
-                    } else {
-                        _state.value.favorites + course
-                    }
-                    _state.update { it.copy(favorites = updatedFavorites) }
-                },
+                onSuccess = {},
                 onFailure = {
                     _state.value = _state.value.copy(error = it.message)
                 }
@@ -113,6 +110,8 @@ sealed interface CoursesIntent {
     ) : CoursesIntent
 
     data object DismissError : CoursesIntent
+
+    data class SearchQueryChanged(val query: String) : CoursesIntent
 }
 
 enum class TypeSorted { DECREASING, NON_DECREASING }

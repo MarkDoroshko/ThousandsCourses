@@ -56,7 +56,7 @@ fun CoursesScreen(
                 AppTextField(
                     modifier = Modifier.weight(2f),
                     value = state.query,
-                    onValueChange = {},
+                    onValueChange = { viewModel.processIntent(CoursesIntent.SearchQueryChanged(it)) },
                     placeholderText = stringResource(R.string.search_courses),
                     leadingIcon = painterResource(R.drawable.ic_search),
                     height = 56.dp,
@@ -68,7 +68,7 @@ fun CoursesScreen(
                 Button(
                     modifier = Modifier
                         .size(56.dp),
-                    onClick = {},
+                    onClick = { viewModel.processIntent(CoursesIntent.SortedCourses) },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.surface,
                         contentColor = MaterialTheme.colorScheme.onSurface
