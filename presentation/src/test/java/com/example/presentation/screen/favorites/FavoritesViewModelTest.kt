@@ -7,6 +7,7 @@ import com.example.domain.usecase.GetFavoritesCoursesUseCase
 import com.example.domain.usecase.ToggleCourseFavoriteStatusUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -90,14 +91,16 @@ class FavoritesViewModelTest {
     @DisplayName("ToggleFavoriteStatus удаляет курс из списка избранных")
     fun toggleFavoriteStatusRemovesCourseFromFavorites() = runTest(testDispatcher) {
         val course = createCourse()
+        val favoritesFlow = MutableStateFlow<List<Course>>(listOf(course))
 
-        whenever(getFavoritesCoursesUseCase()).thenReturn(Result.success(flowOf(listOf(course))))
+        whenever(getFavoritesCoursesUseCase()).thenReturn(Result.success(favoritesFlow))
         whenever(toggleCourseFavoriteStatusUseCase(course)).thenReturn(Result.success(Unit))
 
         val viewModel = createViewModel()
         advanceUntilIdle()
 
         viewModel.processIntent(FavoritesIntent.ToggleFavoriteStatus(course))
+        favoritesFlow.value = emptyList()
         advanceUntilIdle()
 
         assertFalse { viewModel.state.value.favorites.any { it.id == course.id } }

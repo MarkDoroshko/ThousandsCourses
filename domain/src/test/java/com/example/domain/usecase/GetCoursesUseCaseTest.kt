@@ -2,6 +2,7 @@ package com.example.domain.usecase
 
 import com.example.domain.entity.Course
 import com.example.domain.repository.CourseRepository
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -29,6 +30,7 @@ class GetCoursesUseCaseTest {
         val courses = listOf(createCourse(hasLike = false))
 
         whenever(repository.getCourses()).thenReturn(Result.success(courses))
+        whenever(repository.getFavoritesCourses()).thenReturn(Result.success(flowOf(emptyList())))
 
         val result = useCase()
 
@@ -49,15 +51,16 @@ class GetCoursesUseCaseTest {
     }
 
     @Test
-    @DisplayName("Для курса с hasLike=false не вызывает getCourseFromFavorites")
-    fun notCallGetCourseFromFavoritesWhenHasLikeFalse() = runTest {
+    @DisplayName("Для курса с hasLike=false не вызывает toggleCourseFavoriteStatus")
+    fun notToggleFavoriteWhenHasLikeFalse() = runTest {
         val course = createCourse(hasLike = false)
 
         whenever(repository.getCourses()).thenReturn(Result.success(listOf(course)))
+        whenever(repository.getFavoritesCourses()).thenReturn(Result.success(flowOf(emptyList())))
 
         useCase()
 
-        verify(repository, never()).getCourseFromFavorites(course.id)
+        verify(repository, never()).toggleCourseFavoriteStatus(course)
     }
 
     @Test
@@ -66,7 +69,7 @@ class GetCoursesUseCaseTest {
         val course = createCourse(hasLike = true)
 
         whenever(repository.getCourses()).thenReturn(Result.success(listOf(course)))
-        whenever(repository.getCourseFromFavorites(course.id)).thenReturn(Result.success(null))
+        whenever(repository.getFavoritesCourses()).thenReturn(Result.success(flowOf(emptyList())))
         whenever(repository.toggleCourseFavoriteStatus(course)).thenReturn(Result.success(Unit))
 
         useCase()
@@ -80,7 +83,7 @@ class GetCoursesUseCaseTest {
         val course = createCourse(hasLike = true)
 
         whenever(repository.getCourses()).thenReturn(Result.success(listOf(course)))
-        whenever(repository.getCourseFromFavorites(course.id)).thenReturn(Result.success(course))
+        whenever(repository.getFavoritesCourses()).thenReturn(Result.success(flowOf(listOf(course))))
 
         useCase()
 

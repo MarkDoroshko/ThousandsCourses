@@ -8,6 +8,7 @@ import com.example.domain.usecase.GetFavoritesCoursesUseCase
 import com.example.domain.usecase.ToggleCourseFavoriteStatusUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -157,15 +158,17 @@ class CoursesViewModelTest {
     @DisplayName("ToggleFavoriteStatus добавляет курс в избранное если его нет в списке")
     fun toggleFavoriteStatusAddsCourseWhenNotInFavorites() = runTest(testDispatcher) {
         val course = createCourse(id = 1)
+        val favoritesFlow = MutableStateFlow<List<Course>>(emptyList())
 
         whenever(getCoursesUseCase()).thenReturn(Result.success(listOf(course)))
-        whenever(getFavoritesCoursesUseCase()).thenReturn(Result.success(flowOf(emptyList())))
+        whenever(getFavoritesCoursesUseCase()).thenReturn(Result.success(favoritesFlow))
         whenever(toggleCourseFavoriteStatusUseCase(course)).thenReturn(Result.success(Unit))
 
         val viewModel = createViewModel()
         advanceUntilIdle()
 
         viewModel.processIntent(CoursesIntent.ToggleFavoriteStatus(course))
+        favoritesFlow.value = listOf(course)
         advanceUntilIdle()
 
         assertTrue { viewModel.state.value.favorites.any { it.id == course.id } }
@@ -175,15 +178,17 @@ class CoursesViewModelTest {
     @DisplayName("ToggleFavoriteStatus удаляет курс из избранного если он есть в списке")
     fun toggleFavoriteStatusRemovesCourseWhenInFavorites() = runTest(testDispatcher) {
         val course = createCourse(id = 1)
+        val favoritesFlow = MutableStateFlow<List<Course>>(listOf(course))
 
         whenever(getCoursesUseCase()).thenReturn(Result.success(listOf(course)))
-        whenever(getFavoritesCoursesUseCase()).thenReturn(Result.success(flowOf(listOf(course))))
+        whenever(getFavoritesCoursesUseCase()).thenReturn(Result.success(favoritesFlow))
         whenever(toggleCourseFavoriteStatusUseCase(course)).thenReturn(Result.success(Unit))
 
         val viewModel = createViewModel()
         advanceUntilIdle()
 
         viewModel.processIntent(CoursesIntent.ToggleFavoriteStatus(course))
+        favoritesFlow.value = emptyList()
         advanceUntilIdle()
 
         assertFalse { viewModel.state.value.favorites.any { it.id == course.id } }
